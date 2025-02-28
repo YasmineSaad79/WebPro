@@ -1,0 +1,651 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Bookish </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link rel="stylesheet" href="../mystyle/sty.css">
+            <!-----------------------------style for search tags ----------------------------->
+            <style>
+                /* تنسيق النموذج */
+                #search-box {
+                    padding: 20px;
+                    font-size: 16px;
+                    width: 450px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+
+                #search-button {
+                    padding: 10px;
+                    font-size: 20px;
+                    margin-left: 1px;
+                    border: none;
+                    background-color: #fff;
+                    color: #00004d;
+                    cursor: pointer;
+                    border-radius: 10px;
+                }
+
+                #search-button:hover {
+                    background-color: #ffdaeb;
+                }
+                #modal-results {
+                    display: flex;
+                    flex-wrap: wrap; /* يتيح تقسيم العناصر إلى عدة صفوف عند الحاجة */
+                    gap: 20px; /* مسافة بين العناصر */
+                    justify-content: flex-start; /* يمكن تغييره إلى center أو space-between حسب رغبتك */
+
+                }
+                .result-card {
+                    flex: 1 1 calc(50% - 20px); /* عرض كل بطاقة 50% مع الأخذ بعين الاعتبار المسافة */
+                    max-width: calc(50% - 20px); /* عرض أقصى للبطاقة */
+                    box-sizing: border-box; /* لضمان احتساب الحواف والمسافات بشكل صحيح */
+                    background-color: #f9f9f9; /* لون خلفية اختياري */
+                    padding: 10px; /* مسافة داخلية اختيارية */
+                    border-radius: 5px; /* زوايا مستديرة اختيارية */
+
+                }
+
+                /* تنسيق النتائج */
+                .results-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 20px;
+                    justify-content: flex-start;
+                    margin-top: 20px;
+
+
+
+                }
+
+
+                .result-card img {
+                    width: 100%;
+                    height: 150px;
+                    object-fit: cover;
+
+                }
+
+                .result-card h3 {
+                    font-size: 18px;
+                    margin: 10px 0;
+                }
+
+                .result-card p {
+                    font-size: 16px;
+                    color: #555;
+                    margin-bottom: 10px;
+                }
+
+
+                 .add {
+                    padding: 10px;
+                    background-color: #f7b731;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-bottom: 10px;
+                    width:150px;
+                }
+
+                .add:hover {
+                    background-color: #f39c12;
+                }
+
+                .modal {
+
+                    display: none;
+                    justify-content: center;
+                    align-items: center;
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: auto;
+                    background-color: rgba(0, 0, 0, 0.5); /* خلفية شفافة */
+                }
+
+                .modal-content {
+                    background-color: #fff;
+                    max-width: 600px; /* أقصى عرض */
+                    max-height: 60%; /* أقصى ارتفاع */
+                    overflow-y: auto;
+                    margin: 100px auto;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                    display: flex;
+                    flex-direction: column; /* ترتيب المحتويات عموديًا */
+                }
+
+                #modal-results {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 20px;
+                    justify-content: left; /* الصور تبدأ من المنتصف */
+                    margin-top: 6px;
+                }
+
+                .result-card {
+                    flex: 1 1 calc(50% - 20px); /* عرض 50% لكل بطاقة */
+                    max-width: calc(50% - 20px);
+                    box-sizing: border-box;
+                    background-color: #f9f9f9;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+
+                .close-button {
+                    position: absolute;
+                    top: 100px;
+                    right: 400px;
+                    font-size: 24px;
+                    cursor: pointer;
+                }
+
+                .result-card img {
+                    width: 150px;
+                    height: 200px;
+                    object-fit: cover;
+                    margin-bottom: 10px;
+
+                }
+                .price-container {
+                    display: flex; /* جعل العناصر في صف واحد */
+                    align-items: center; /* محاذاة العناصر عمودياً */
+                    gap: 10px; /* مسافة بين السعر والقلب */
+                    justify-content: flex-start; /* جعل السعر على اليسار */
+                }
+
+                /* إزالة الخلفية والحدود من القلب */
+                .add-to-favorites {
+                    background: none; /* إزالة الخلفية */
+                    border: none; /* إزالة الحدود */
+                    cursor: pointer;
+                }
+                .add-to-favorites:hover{
+                    transform:  scale(1.1);
+                }
+                .add-to-favorites img {
+                    width: 20px; /* حجم أيقونة القلب */
+                    height: 2px;
+                    object-fit: contain; /* تحسين مظهر الصورة */
+                }
+
+            </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-1">
+        <a href="#" class="logo"> <i class="fas fa-book"></i> <span class="bookish">Bookish</span> </a>
+        <!-------------------------------------------------------------------->
+        <form action="" class="search-form">
+            <input type="search" name="" placeholder="search here ..." id="search-box" title="Please search using book name">
+            <button type="button" id="search-button" class="fas fa-search"></button>
+        </form>
+
+        <div id="search-results" class="results-container"></div>
+
+        <div id="search-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <div id="modal-results"></div>
+            </div>
+        </div>
+        <!-------------------------------------------------------------------->
+
+        <div class="icons">
+            <div id="search-btn" class="fas fa-search"></div>
+            <a href="wishlist.html" id="favorites-link" class="fas fa-heart"></a>
+            <a href="Cart.html" class="fas fa-shopping-cart"></a>
+            <div id="login-btn" class="fas fa-user"></div>
+            <a href="#" id="logout-btn" class="fas fa-sign-out-alt" title="Log Out"></a>
+        </div>
+
+
+    </div>
+    <div class="header-2">
+        <nav class="navbar">
+            <a href="#">home</a>
+            <a href="Featured.html">Featured </a>
+            <a href="Arrivals.html">Arrivals</a>
+            <a href="review.html">Reviews  </a>
+            <a href="aboutUs.html">About Us </a>
+        </nav>
+    </div>
+
+</header>
+<nav class="bottom-navbar">
+    <a href="#" class="fas fa-home"></a>
+    <a href="Products.html" class="fas fa-list"></a>
+    <a href="Arrivals.html" class="fas fa-bell"></a>
+    <a href="review.html" class="fas fa-comments"></a>
+    <a href="aboutUs.html" class="fas fa-info-circle"></a>
+
+</nav>
+
+<div class="login-form-container">
+
+    <div id="close-login-btn" class="fas fa-times"></div>
+
+    <!-- نموذج تسجيل الدخول -->
+    <form id="login-form"  method="POST">
+        <h3>Sign in</h3>
+        <span>Email</span>
+        <input type="email" name="email" class="box" placeholder="Enter your email" required>
+        <span>Password</span>
+        <input type="password" name="password" class="box" placeholder="Enter your password" required>
+        <div class="checkbox">
+            <input type="checkbox" name="remember" id="remember-me">
+            <label for="remember-me">Remember me</label>
+        </div>
+        <input type="submit" value="Sign in" class="btn">
+        <p>Forget password? <a href="#"  id="forget-password-link">Click here</a></p>
+        <p>Don't have an account? <a href="#" id="create-account-link">Create one</a></p>
+    </form>
+
+    <!-- نموذج التسجيل (Sign Up) -->
+    <form id="signup-form" method="POST" action="../myphp/signup.php" style="display: none;">
+        <h3>Sign Up</h3>
+        <pre> First Name                  last name </pre>
+        <div class="name-fields">
+            <input type="text" name="first-name" class="box" placeholder="Enter your first name" required>
+            <input type="text" name="last-name" class="box" placeholder="Enter your last name" required>
+        </div>
+        <span>Email</span>
+        <input type="email" name="email" class="box" placeholder="Enter your email" required>
+        <span>Password</span>
+        <input type="password" name="password" class="box" placeholder="Enter your password" required minlength="8">
+        <span>Gender</span>
+        <select name="gender" class="box" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+        <input type="submit" value="Sign Up" class="btn">
+        <p>Already have an account? <a href="#" id="back-to-login-link">Back to Sign In</a></p>
+    </form>
+    <script>
+        function submitForm(event) {
+            event.preventDefault(); // منع النموذج من إعادة التحميل بشكل تقليدي
+
+            let formData = new FormData(document.getElementById('signup-form'));
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', 'signup.php', true);  // الاتصال بملف PHP بدون تحميل الصفحة
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    document.getElementById('responseMessage').innerHTML = xhr.responseText; // عرض الاستجابة
+                }
+            };
+
+            xhr.send(formData); // إرسال البيانات إلى PHP
+        }
+
+    </script>
+
+    <form id="reset-password-form" action="../myphp/send_otp.php" style="display: none;">
+        <h3>Reset Password</h3>
+        <span>Email</span>
+        <input type="email" name="reset-email" class="box" placeholder="Enter your email to reset password" required>
+        <input type="submit" value="Send Reset Link" class="btn">
+        <p>Remember your password? <a href="#" id="back-to-login-link2">Back to Sign In</a></p>
+    </form>
+
+    <form id="otp-form" action="../myphp/verify_otp.php" style="display: none;">
+        <h3>Verify Code</h3>
+        <span>Enter the Code</span>
+        <input type="text" name="otp-code" class="box" placeholder="Enter the code sent to your email" required>
+        <input type="submit" value="Verify Code" class="btn">
+        <p>Didn't receive the code? <a href="#" id="resend-code-link">Resend Code</a></p>
+
+    </form>
+
+
+    <form action="../myphp/process_change_password.php" method="POST" id="change-password-form"  style="display: none;" >
+        <h3>Account Info</h3>
+
+        <span>New Password</span>
+        <input type="password" name="new_password" class="box" placeholder="Write new password" required pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}">
+
+        <span>Confirm New Password</span>
+        <input type="password" name="confirm_new_password" class="box" placeholder="Confirm new password" required>
+
+        <!-- حقل مخفي لنقل البريد الإلكتروني -->
+        <input type="hidden" name="email" value="<?php echo htmlspecialchars($_GET['email']); ?>">
+
+        <button type="submit" class="pass-btn" id="pass-btn">Change Password</button>
+    </form>
+</div>
+
+
+<div class="privacy-policy-container">
+    <div id="close-privacy-policy-btn" class="fas fa-times"></div>
+    <form>
+        <h3>Privacy Policy</h3>
+        <p>
+            At Bookish, we are committed to protecting your privacy. This Privacy Policy outlines how we collect, use, and protect your information.
+        </p>
+        <p>
+            <strong>1. Data Collection:</strong> We collect personal information such as your name, email, and preferences when you interact with our website.
+        </p>
+        <p>
+            <strong>2. Data Usage:</strong> Your data is used solely to improve your experience on our website and to communicate updates or offers.
+        </p>
+        <p>
+            <strong>3. Data Protection:</strong> We implement robust measures to protect your information from unauthorized access.
+        </p>
+        <button type="button" id="accept-policy-btn" class="btn">Accept</button>
+
+    </form>
+</div>
+
+<div class="payment-method-container" id="payment-method-container">
+    <div id="close-payment-method-btn" class="fas fa-times"></div>
+    <form>
+        <h3>Payment Method</h3>
+        <p>Please choose your preferred payment method.</p>
+        <label>
+            <input type="radio" name="payment-method" value="credit-card"> Credit Card
+        </label><br>
+        <label>
+            <input type="radio" name="payment-method" value="paypal"> PayPal
+        </label><br>
+        <label>
+            <input type="radio" name="payment-method" value="bank-transfer"> Bank Transfer
+        </label><br>
+
+
+        <button id="accept-payment-method-btn" class="btn">Accept</button>
+    </form>
+</div>
+
+
+
+
+
+
+
+<section class="home" id="home">
+    <a href="#" ><img src="../imgs/rrrr.jpg" alt=""></a>
+    <div class ="row">
+        <div class="content">
+            <h3> Our library offers books to inspire and enrich your life </h3>
+            <p> Embark on a journey through the pages of books, where every word opens a new world <br>and every story lets you live a thousand lives! </p>
+            <a href="Products.html" class="btn"> Shop now</a>
+
+        </div>
+
+    </div>
+</section>
+<section class ="icons-container" >
+    <div class="icons">
+        <i class="fas fa-truck"></i>
+        <div class="content">
+            <h3>free shipping</h3>
+            <p>order over $50</p>
+        </div>
+    </div>
+    <div class="icons">
+        <i class="fas fa-lock"></i>
+        <div class="content">
+            <h3>secure payment</h3>
+            <p>100 secure payment</p>
+        </div>
+    </div>
+    <div class="icons">
+        <i class="fas fa-redo-alt"></i>
+        <div class="content">
+            <h3>easy return</h3>
+            <p>10 days returns</p>
+        </div>
+    </div>
+    <div class="icons">
+        <i class="fas fa-headset"></i>
+        <div class="content">
+            <h3>24/7 support</h3>
+            <p>call us anytime</p>
+        </div>
+    </div>
+
+</section>
+<section class="blogs"  >
+    <h1 class="heading"><span >Our Blogs</span></h1>
+
+    <div class="swiper blogs-slider">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide box">
+                <div class="image">
+                    <img src="../imgs/goals.jpg" alt="">
+                </div>
+                <div class="content">
+                    <h3>Set your reading goals.</h3>
+                    <p>Before reading a book, set a clear goal. Do you want to improve skills or gain knowledge? Choose books that match your interests.</p>
+                    <a href="https://bibliolifestyle.com/reading-goals-for-adults/" target="_blank" class="btn">read more</a>
+
+                </div>
+
+            </div>
+
+            <div class="swiper-slide box">
+                <div class="image">
+                    <img src="../imgs/books.jpg">
+                </div>
+                <div class="content">
+                    <h3>Pick books that suit your interests.</h3>
+                    <p>Don't read just for the sake of reading. Choose books that interest and engage you.This will make reading more enjoyable and help you stick with it longer.</p>
+                    <a href="https://fastercapital.com/topics/how-to-choose-the-right-books-for-your-interests,-goals,-and-skill-levels.html" target="_blank" class="btn">read more</a>
+
+                </div>
+
+            </div>
+
+            <div class="swiper-slide box">
+                <div class="image">
+                    <img src="../imgs/clock.jpg">
+                </div>
+                <div class="content">
+                    <h3>Set aside time for reading every day.</h3>
+                    <p>Try to set a fixed time for reading every day.Even if it's just for a few minutes, you'll notice gradual improvement in your reading habit.</p>
+                    <a href="https://www.calendar.com/blog/make-time-to-read/" target="_blank" class="btn">read more</a>
+
+                </div>
+
+            </div>
+
+            <div class="swiper-slide box">
+                <div class="image">
+                    <img src="../imgs/reading.jpg">
+                </div>
+                <div class="content">
+                    <h3>Read slowly and understand.</h3>
+                    <p>Don't rush through books. Take your time to absorb and thoughtfully analyze every idea. This approach will help you get the most value and insights from each book.</p>
+                    <a href="https://www.readnaturally.com/about-us/blog/7-tips-to-slow-down-your-speed-readers"target="_blank" class="btn">read more</a>
+
+                </div>
+
+            </div>
+
+            <div class="swiper-slide box">
+                <div class="image">
+                    <img src="../imgs/notebook.jpg">
+                </div>
+                <div class="content">
+                    <h3>Take notes while reading.</h3>
+                    <p>If you're reading a book with important information, take notes or write down key ideas. This will help you remember the important points later.</p>
+                    <a href="https://learningcenter.unc.edu/tips-and-tools/taking-notes-while-reading/" target="_blank" class="btn">read more</a>
+
+                </div>
+
+            </div>
+
+            <div class="swiper-slide box">
+                <div class="image">
+                    <img src="../imgs/several.jpg">
+                </div>
+                <div class="content">
+                    <h3>Vary the types of books you read.</h3>
+                    <p>Don't limit yourself to one type of book. Try reading different genres like novels, scientific, self-development, and art books. This will broaden your horizons.</p>
+                    <a href="https://www.thefussylibrarian.com/newswire/for-readers/2019/04/29/mixing-it-up-the-importance-of-reading-different-genres" target="_blank" class="btn">read more</a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+<section class="footer">
+    <div class="box-container">
+        <div class="box">
+            <h3> Our locations </h3>
+            <a href="https://www.google.com/maps/dir/%D9%85%D9%83%D8%AA%D8%A8%D8%A9+%D8%A7%D9%84%D9%83%D9%85%D8%A7%D9%84+Alkamal+Bookshop%D8%8C+St+Nablus,+%D9%86%D8%A7%D8%A8%D9%84%D8%B3%E2%80%AD/%D9%86%D8%A7%D8%A8%D9%84%D8%B3%E2%80%AD%E2%80%AD/@32.2224402,35.2635695,17z/data=!3m1!4b1!4m14!4m13!1m5!1m1!1s0x151ce05f701eb01d:0x9d11e6f6b9f81c34!2m2!1d35.2580428!2d32.2221492!1m5!1m1!1s0x151ce0f650425697:0x7f0ba930bd153d84!2m2!1d35.2621461!2d32.2226678!3e0?entry=ttu&g_ep=EgoyMDI0MTIwNC4wIKXMDSoASAFQAw%3D%3D" target="_blank"><i class="fas fa-map-marker-alt"></i> Nablus</a>
+            <a href="https://www.google.com/maps/dir/%D9%85%D9%83%D8%AA%D8%A8%D8%A9+%D8%A7%D9%84%D8%AC%D8%A7%D9%85%D8%B9%D8%A9+%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9+%D8%A7%D9%84%D8%A7%D9%85%D8%B1%D9%8A%D9%83%D9%8A%D8%A9%D8%8C+%D8%AC%D9%86%D9%8A%D9%86%E2%80%AD/%D8%AC%D9%86%D9%8A%D9%86%E2%80%AD%E2%80%AD/@32.4351695,35.3597651,13z/data=!3m1!4b1!4m14!4m13!1m5!1m1!1s0x151cfbb234990f97:0xcf49bff8c13b278b!2m2!1d35.3432711!2d32.406501!1m5!1m1!1s0x151cfed5525459a7:0x8af2eaf8c123e9a4!2m2!1d35.2938591!2d32.4646353!3e0?entry=ttu&g_ep=EgoyMDI0MTIwNC4wIKXMDSoASAFQAw%3D%3D" target="_blank"><i class="fas fa-map-marker-alt"></i> Jenin</a>
+            <a href="https://www.google.com/maps/dir//%D9%85%D9%83%D8%AA%D8%A8%D8%A9+%D8%A7%D9%84%D9%82%D9%84%D9%85%D8%8C+%D8%A7%D9%84%D8%AE%D9%84%D9%8A%D9%84%E2%80%AD/@31.5289727,35.1794635,12z/data=!4m9!4m8!1m0!1m5!1m1!1s0x1502e5e52328795b:0xf2666b5ad2ed2ec!2m2!1d35.097061!2d31.5288528!3e0?entry=ttu&g_ep=EgoyMDI0MTIwNC4wIKXMDSoASAFQAw%3D%3D" target="_blank"><i class="fas fa-map-marker-alt"></i> Hebron </a>
+            <a href="https://www.google.com/maps/dir//%D9%85%D9%83%D8%AA%D8%A8%D8%A9+%D8%A7%D9%84%D8%B3%D9%81%D8%A7%D8%B1%D9%8A%D9%86%D9%8A,+%D8%B4.+%D8%A7%D9%84%D8%B9%D9%88%D8%AF%D8%A9%D8%8C+%D8%B1%D8%A7%D9%85+%D8%A7%D9%84%D9%84%D9%87%E2%80%AD/@31.9034481,35.2865487,12z/data=!4m9!4m8!1m0!1m5!1m1!1s0x151d2bec9f839711:0x61d48f800534c21!2m2!1d35.204144!2d31.9033155!3e0?entry=ttu&g_ep=EgoyMDI0MTIwNC4wIKXMDSoASAFQAw%3D%3D" target="_blank"><i class="fas fa-map-marker-alt"></i> Ramallah </a>
+        </div>
+
+        <div class="box">
+            <h3> quick links </h3>
+            <a href="#"><i class="fas fa-arrow-right"></i> home </a>
+            <a href="Featured.html"><i class="fas fa-arrow-right"></i> featured </a>
+            <a href="Arrivals.html"><i class="fas fa-arrow-right"></i> arrival </a>
+            <a href="review.html"><i class="fas fa-arrow-right"></i> reviews </a>
+            <a href="aboutUs.html"><i class="fas fa-arrow-right"></i> about us </a>
+        </div>
+
+        <div class="box">
+            <h3> extra links </h3>
+            <a href="Cart.html"  ><i class="fas fa-arrow-right"></i> ordered items </a>
+
+            <a href="javascript:void(0);" id="privacy-policy-link"><i class="fas fa-arrow-right"></i> Privacy Policy </a>
+            <a href="javascript:void(0);" id="payment-method-link"><i class="fas fa-arrow-right"></i> payment method </a>
+
+
+        </div>
+
+        <div class="box">
+            <h3> contact info </h3>
+            <a href="https://wa.me/+972592374571"><i class="fas fa-phone"></i> 059123456789 </a>
+            <a href="https://wa.me/+972566502266"><i class="fas fa-phone"></i> 059132547698 </a>
+            <a href="mailto:saady9055@gmail.com"><i class="fas fa-envelope"></i> saady9055@gmail.com </a>
+        </div>
+    </div>
+
+    <div class="share">
+        <a href="https://www.facebook.com/shahd.alawneh?locale=ar_AR" target="_blank" class="fab fa-facebook"></a>
+        <a href="https://www.instagram.com/shahd.alawneh/" target="_blank" class="fab fa-instagram"></a>
+        <a href="https://www.linkedin.com/in/yasmine-saad-0068ba205/" target="_blank" class="fab fa-linkedin"></a>
+        <a href="https://www.pinterest.com/saady9055/" target="_blank" class="fab fa-pinterest"></a>
+    </div>
+    <div class="credit"> created by <span>Yasmine Saad & Shahd Alawneh </span> | all rights reserved!
+
+    </div>
+</section>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="../js/script.js">
+</script>
+
+<!--java script for search btn-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchButton = document.getElementById("search-button");
+        const searchBox = document.getElementById("search-box");
+        const modal = document.getElementById("search-modal");
+        const modalResults = document.getElementById("modal-results");
+        const closeButton = document.querySelector(".close-button");
+
+        const books = [
+            { title: "COMPANY", price: 34.00, image: "../images/1p.jpeg" },
+            { title: "DAYLIGHT", price: 35.00, image: "../images/2p.jpeg" },
+            { title: "THE LIFE'S", price: 24.00, image: "../images/3p.jpeg" },
+            { title: "GARDEN", price: 27.00, image: "../images/4p.jpeg" },
+            { title: "THE DEEP BLUE", price: 10.00, image: "../images/9p.jpeg" },
+            { title: "OUR BUTTERFLY", price: 17.00, image: "../images/18p.jpeg" },
+            { title: "SANDRA CONNORS", price: 13.00, image: "../images/14p.jpeg" },
+            { title: "THE BUSINESS COMMUNICATOR", price: 15.00, image: "../images/8p.jpeg" },
+            { title: "THE FOREST PRINCESS", price: 35.00, image: "../images/5p.jpeg" },
+            { title: "WHISPERS OF THE HEART", price: 12.00, image: "../images/13p.jpeg" },
+            { title: "CROCODILE", price: 11.00, image: "../images/11p.jpeg" },
+            { title: "Virginia Woolf", price: 30.00, image: "../images/12p.jpeg" },
+            { title: "CHRISTMAS", price: 9.00, image: "../images/10p.jpeg" },
+            { title: "EMPLOYEE", price: 17.00, image: "../images/7p.jpeg" },
+            { title: "FASHION", price: 14.00, image: "../images/15p.jpeg" },
+            { title: "THE SECRET LIFE OF MAE", price: 15.00, image: "../images/16p.jpeg" },
+            { title: "RELATIONSHIPS", price: 16.00, image: "../images/17p.jpeg" },
+            { title: "الامن السيبراني للاطفال", price: 20.00, image: "../images/6p.jpeg" },
+            { title: "BUSINESS", price: 34.00, image: "../images/23p.jpeg" },
+            { title: "تدوينة ليلى", price: 27.00, image: "../images/20p.jpeg" },
+        ];
+
+        searchButton.addEventListener("click", function () {
+            const query = searchBox.value.toLowerCase().trim();
+
+            if (query === "") {
+                alert("Please enter a search query.");
+                return;
+            }
+
+            const results = books.filter(book => book.title.toLowerCase().includes(query));
+
+            modalResults.innerHTML = "";
+
+            if (results.length > 0) {
+                results.forEach(book => {
+                    const card = document.createElement("div");
+                    card.className = "result-card";
+                    card.innerHTML = `
+      <img src="${book.image}" alt="${book.title}">
+        <h3>${book.title}</h3>
+       <div class="price-container">
+          <p class="book-price">$${book.price.toFixed(2)}</p>
+          <button class="add-to-favorites" data-book-id="1">
+            <img src="../images/heart-3-line.png" alt="Like" style="width:20px;height:20px;">
+          </button>
+        </div>
+        <button class ="add">Add to Cart</button>
+
+
+                    `;
+                    modalResults.appendChild(card);
+                });
+            } else {
+                modalResults.innerHTML = '<p style="text-align: center; color: #555;">No books found matching your search.</p>';
+            }
+
+            modal.style.display = "block";
+        });
+
+        closeButton.addEventListener("click", function () {
+            modal.style.display = "none";
+        });
+
+        window.addEventListener("click", function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>
